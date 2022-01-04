@@ -381,7 +381,7 @@ try{
     $controller = new $controllerName;        # 实例化控制器
     if(!$controller instanceof grace){throw new graceException('[ '.$controllerName.' ] 该控制器 必须继承自 grace',100000);}
 	
-	 
+	 p('测试');
 
 	 
 	 //运行追踪
