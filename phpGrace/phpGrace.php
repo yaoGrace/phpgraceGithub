@@ -386,5 +386,4 @@ try{
 	 
 	 //运行追踪
     if(PG_TRACE){gracesTrace();} 
-}catch(graceException $e){$e->showBug();} 
-  
+}catch(graceException $e){$e->showBug();}  
