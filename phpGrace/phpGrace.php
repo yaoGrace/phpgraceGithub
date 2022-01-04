@@ -49,7 +49,11 @@ if(!defined('PG_SESSION_START')){define('PG_SESSION_START' , false);}
 if(!defined('PG_SESSION_HOST')){define('PG_SESSION_HOST' , 'tcp://127.0.0.1:11211');}
 
 // 应用所在目录
-if(!defined('PG_PATH')){define('PG_PATH'  , './app');}
+if(!defined('PG_PATH')){define('PG_PATH'  , 'application');}
+// 网址分割线PG_URL_SPLITLINE 默认 / ，也可以自定义比如 - 
+if(!defined('PG_URL_SPLITLINE')){define('PG_URL_SPLITLINE'  , '/');}
+// 默认前端分组目录
+define('DEFAULT_SROOT'         ,  'home');
 // 控制器文件所在目录
 define('PG_CONTROLLER'  , 'controllers');
 // 视图文件所在目录
@@ -61,7 +65,7 @@ define('PG_TOOLS'       , 'tools');
 // 语言包文件所在目录
 define('PG_LANG_PACKAGE', 'lang');
 // 全局配置文件名称
-define('PG_CONF'        , 'config.php');
+define('PG_CONF'        , '../config/config.php');
 //	是否开启404页面展示 默认 true【开启】，false 【关闭】 
 if(!defined('PG_404')){define('PG_404' , true);}
 // 加载框架函数库
@@ -336,51 +340,47 @@ class cacheBase{
 
 // 框架启动
 try{
+    /**
+     *判断必须的3个文件是否加载，如未加载完整，则退出
+     * index.php              根目录下的入口文件
+     * phpGrace/phpGrace.php  核心文件
+     * phpGrace/graceFunctions.php   函数文件
+     **/
 	$includedFiles = get_included_files();
-	if(count($includedFiles) < 3){exit;}
-	header('content-type:text/html; charset=utf-8');
-	if(PG_SESSION_START){startSession();}
-	if(!is_dir(PG_PATH)){include PG_IN.'graceCreate.php'; graceCreateApp();}
-	$router = graceRouter();
-	$controllerName = $router[0];
-	$mode = '/^([a-z]|[A-Z]|[0-9])+$/Uis';
-	$res  = preg_match($mode, $controllerName);
-	if(!$res){$controllerName = 'index';}
-	$controllerFile = PG_PATH.'/'.PG_CONTROLLER.'/'.$controllerName.'.php';
-	if(!is_file($controllerFile)){
-		$controllerName = 'index';
-		$controllerFile = PG_PATH.'/'.PG_CONTROLLER.'/index.php';
-		//如果对应控制器不存在，开启404页面
-		PG_404_Check();
-	}
-	require $controllerFile;
-	define('PG_C', $controllerName);
-	$controllerName = $controllerName.'Controller';
-	$controller = new $controllerName;
-	if(!$controller instanceof grace){throw new graceException('[ '.$controllerName.' ] 该控制器 必须继承自 grace',100000);}
-	$methodName = $router[1];
-	$res  = preg_match($mode, $methodName);
-	if(!$res){$methodName = 'index';}
-	$graceMethods = array(
-		'__init', 'display', 'json','dataList', 'getDataById', 'getDefaultVal', 
-		'skipToIndex', 'getCacher', 'cache', 'clearCache', 'removeCache', 'initVal', 'intVal'
-	);
-	if(in_array($methodName, $graceMethods)){$methodName  = 'index';}
-		if(!method_exists($controller, $methodName)){
-        $methodName  = 'index';
-        //如果对应方法名不存在，启动404页面
-	    PG_404_Check();
-    }
-	define('PG_M', $methodName);
-	define('PG_SROOT', str_replace(PG_INDEX_FILE_NAME, '', $_SERVER['PHP_SELF']));
-	array_shift($router);
-	array_shift($router);
-	$controller->gets = $router;
-	define('PG_URL', implode('/', $router));
-	call_user_func(array($controller, '__init'));
-	$GLOBALS['graceSql'] = array();
-	call_user_func(array($controller, $methodName));
-	if(PG_AUTO_DISPLAY){call_user_func(array($controller, 'display'));}
+	if(count($includedFiles) < 3){exit;}  
+	header('content-type:text/html; charset=utf-8'); #定义默认语言编码
+	if(PG_SESSION_START){startSession();}  # 检查是否需要开启session
+	//if(!is_dir(PG_PATH)){include PG_IN.'graceCreate.php'; graceCreateApp();}  #如果模块不存在，自动创建
+	$router = graceRouter();               # 路由解析基础url为数组 
+	$groupName = $router[0];               # 分组模块 
+    $mode = '/^([a-z]|[A-Z]|[0-9])+$/Uis';
+    $res  = preg_match($mode, $groupName);
+    if(!$res){$groupName = DEFAULT_SROOT;} # 模块如果起名不规则，修正为默认模块
+    define('PG_SROOT',$groupName);         # 分组名确定下来了 ，分组名称常量 PG_SROOT
+    p('<BR/><span style="color:red">当前分组：'.PG_SROOT.'</span><BR/>');// -----------------------------------------------调试输出
+    $controllerName = $router[1];          # 读取控制器 
+    $resCtr  = preg_match($mode, $controllerName);
+    if(!$resCtr){$controllerName = 'index';}  # 控制器如果起名不规则，修正为index控制器
+    $controllerFile = PG_PATH.'/'.PG_SROOT.'/'.PG_CONTROLLER.'/'.$controllerName.'.php'; #控制器文件实际目录
+    if(!is_file($controllerFile)){            # 检查控制器文件是否真实存在
+        $controllerName = 'index';            #  不存在就修正为默认
+        $controllerFile = PG_PATH.'/'.PG_SROOT.'/'.PG_CONTROLLER.'/index.php';  # 重定义为默认首页的index控制器
+        PG_404_Check();                       # 检查是否开启报错404模式
+    } 
+    p(' 控制器相对目录:'.$controllerFile.'<br/>');    // -----------------------------------------------调试输出 
+    p('当前控制器名称：'.$controllerName.'<br/>');
+    p($includedFiles);
+    require $controllerFile;                  # 引入控制器文件 
+    p($controllerFile);
+    define('PG_C', $controllerName);          # 控制器确定下来，控制器常量 PG_C
+    p("<span style='color:red'>当前控制器：".PG_C."</span><br/>");      // -----------------------------------------------调试输出
+    $controllerName = $controllerName.'Controller'; 
+    $controller = new $controllerName;        # 实例化控制器
+    if(!$controller instanceof grace){throw new graceException('[ '.$controllerName.' ] 该控制器 必须继承自 grace',100000);}
+	
+	 
+
+	 
 	 //运行追踪
     if(PG_TRACE){gracesTrace();} 
 }catch(graceException $e){$e->showBug();} 

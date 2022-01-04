@@ -59,8 +59,8 @@ function graceInitConfig(){
 function __graceAutoLoad($className){
 	// 自定义控制器文件加载
 	if(substr($className, -10) == 'Controller'){
-		$fileUri = PG_PATH.'/'.PG_CONTROLLER.'/'.substr($className, 0, -10).'.php';
-		if(is_file($fileUri)){require $fileUri;}
+		$fileUri = PG_PATH.'/'.PG_SROOT.'/'.PG_CONTROLLER.'/'.substr($className, 0, -10).'.php';
+		if(is_file($fileUri)){require $fileUri;} 
 	}
 	// 利用命名空间加载其它类文件
 	else{
@@ -152,34 +152,48 @@ function tool($args){
  * 功能 : 路由解析
  * @return array
 */
-function graceRouter(){
-	if(isset($_GET['pathInfo'])){$path = $_GET['pathInfo']; unset($_GET['pathInfo']);}else{$path = 'index/index';}
-	if(PG_SUFFIX){$path = str_replace(PG_SUFFIX, '', $path);}
-	$router = explode('/', $path);
-	if(empty($router[0])){array_shift($router);}
-	if(PG_ROUTE){
-		$routerArray = require(PG_PATH.'/router.php');
-		if(array_key_exists($router[0], $routerArray)){
-			$newRouter    = array(); 
-			$newRouter[0] = $routerArray[$router[0]][0];
-			$newRouter[1] = $routerArray[$router[0]][1];
-			if(!empty($routerArray[$router[0]][2]) && is_array($routerArray[$router[0]][2])){
-				$newRouter = array_merge($newRouter, $routerArray[$router[0]][2]);	
+function graceRouter(){  
+	$router = array();
+	if(isset($_GET['pathInfo'])&&$_GET['pathInfo']!=''){
+		$path = $_GET['pathInfo']; unset($_GET['pathInfo']); 
+		# 如果伪后缀有启动， 路由中则去除后缀，避免引起路由错误
+		if(PG_SUFFIX){$path = str_replace(PG_SUFFIX, '', $path);}		
+		# 通过网址分割线 PG_URL_SPLITLINE 分组 (分割线默认为 / )，可以自己index入口自定义
+		$router = explode(PG_URL_SPLITLINE, $path);  
+		if(isset($router[0])){
+			#判断访问应用模块   通过判断目录存在，效率不高，也可以通过类的映射，来判断是否存在（优化项）
+			if(is_dir(PG_PATH.'/'.$router[0])){
+				# 后台模块 或者 api模块 等其他模块 
+				$router[1] = isset($router[1]) ?  $router[1] :  'index';
+				$router[2] = isset($router[2]) ?  $router[2] :  'index'; 
+			}else{ 
+				# 默认home模块
+				$router[0] =  isset($router[0]) ?  $router[0] :  'index';
+				$router[1]  =  isset($router[1]) ?  $router[1] :  'index'; 
+				//在数组首位插入，并整体后移 顺序不变
+				array_unshift($router,DEFAULT_SROOT); 
 			}
-			define("PG_PAGE",  1);
-			return $newRouter;
-		};
-	}
-	$router[0] = isset($router[0]) ?  $router[0] : 'index';
-	$router[1] = isset($router[1]) ?  $router[1] : 'index';
-	for($i = 2; $i < count($router); $i++){
-		if(preg_match('/^page_(.*)('.PG_SUFFIX.')*$/Ui', $router[$i], $matches)){
-			define("PG_PAGE",  intval($matches[1]));
-			array_splice($router, $i, 1);
-		}
-	}
-	if(!defined("PG_PAGE")){define("PG_PAGE",  1);}
-	return $router;
+		} 
+	}else if(empty($router[0])) 
+	{ 
+		#访问的为首页 默认控制器和方法  
+		array_shift($router);
+		$router[0] = DEFAULT_SROOT;
+		$router[1] = 'index';
+		$router[2] = 'index'; 
+	} 
+	p($router);
+	p("<br/>数组数量：".count($router)."<br/>");
+ // 提取分页   	
+ for($i = 3; $i < count($router); $i++){
+	 if(preg_match('/^page_(.*)('.PG_SUFFIX.')*$/Ui', $router[$i], $matches)){
+		 define("PG_PAGE",  intval($matches[1]));
+		 array_splice($router, $i, 1);
+	 }
+ }
+ if(!defined("PG_PAGE")){define("PG_PAGE",  1);} 
+ p("当前分页为：".PG_PAGE.'页');
+ return $router;
 }
 
 
