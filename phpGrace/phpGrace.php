@@ -1,8 +1,11 @@
 <?php
-/*********************************************
+/*********************************************************************
  *  框架核心文件
- *  @version   1.2.2
- *********************************************/
+ *  @auther  :  王扣
+ *  @email   :  liukuaizhuan@qq.com 
+ *  @version :  2.0.0
+ *  github	 :  https://github.com/yaoGrace/phpgraceGithub
+ *********************************************************************/
 
 // 内存及运行时间起始记录
 define('PG_START_MEMORY'    ,  memory_get_usage());
@@ -12,7 +15,7 @@ define('PG_INDEX_FILE_NAME' , 'index.php');
 // 页面后缀
 if(!defined('PG_SUFFIX')){define('PG_SUFFIX' , false);}
 // 框架版本
-define('PG_VERSION'         ,  '1.2.2');
+define('PG_VERSION'         ,  '2.0.0');
 // 系统分隔符
 define('PG_DS'              ,  DIRECTORY_SEPARATOR);
 // 框架核心目录所在位置
