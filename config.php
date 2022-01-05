@@ -6,7 +6,7 @@
 return array(
 	//数据库配置
 	'db'                 => array(
-		'databaseType'   =>    'mysql',     // 数据库类型
+		'databaseType'   =>    'mysql',     // 数据库类型 mysql / sqlsrv
     	'host'           =>    '127.0.0.1', // 数据库主机地址
     	'port'           =>    '3306',      // 数据库端口
 		'user'           =>    '',      // 数据库账户
