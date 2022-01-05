@@ -1,7 +1,8 @@
 <?php
-/**************************************************
- * phpGrace 缓存类 [memcache] 
- *************************************************/
+/**
+ * phpGrace 缓存类 [memcache]
+ * 作者 : 刘海君 5213606@qq.com
+ */
 namespace phpGrace\tools\caches;
 
 class memcacheCacher{

@@ -1,13 +1,15 @@
-<?php
-//404自定义页面
-if(!defined('PG_VERSION')) exit();?>
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="https://at.alicdn.com/t/font_2548137_rkkkrkm96ad.css?spm=a313x.7781069.1998910419.370&file=font_2548137_rkkkrkm96ad.css" />
 <title>404</title>
 <style type="text/css">
-*{margin:0;padding:0;font-family:"Helvetica Neue",Helvetica,"PingFang SC","Microsoft YaHei","微软雅黑";}
+*{
+    margin:0;
+    padding:0;
+    font-family:"Helvetica Neue",Helvetica,"PingFang SC","Microsoft YaHei","微软雅黑";
+}
 a{color:#2F4056;text-decoration:none!important;}
 body{background:#F8F8F8;}
 #t404{font-size:258px; margin:20px 0px; color:#c2ccd1;line-height:280px;height:280px;postion:flex;}

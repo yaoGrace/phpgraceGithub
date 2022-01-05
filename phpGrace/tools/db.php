@@ -1,8 +1,13 @@
 <?php
-/*****************************************************************
+/**
  * mysql 数据库操作类基于 pdo
+ * @link      http://www.phpGrace.com
+ * @copyright Copyright (c) 2010-2020 phpGrace.
+ * @license   http://www.phpGrace.com/license
+ * @package   phpGrace/tools
+ * @author    haijun liu mail:5213606@qq.com
  * @version   1.2.0
- ****************************************************************/
+ */
 namespace phpGrace\tools;
 
 class db {
@@ -390,7 +395,7 @@ class db {
 	
 	// 控制台打印刚刚执行的 sql 语句
 	public function debugSql(){
-		echo '<script>console.log("phpGrace log : sql 命令 : '.$this->sql.'");</script>';
+		echo '<script>console.log("log : sql 命令 : '.$this->sql.'");</script>';
 	}
 	
 }

@@ -1,10 +1,11 @@
 <?php
 /*********************************************************************
  *  框架核心文件
- *  @auther  :  王扣
+ *  @auther  :  yaoGrace
  *  @email   :  liukuaizhuan@qq.com 
  *  @version :  2.0.0
  *  github	 :  https://github.com/yaoGrace/phpgraceGithub
+ *  重写内核
  *********************************************************************/
 
 // 内存及运行时间起始记录
@@ -41,22 +42,19 @@ if(!defined('PG_AUTO_DISPLAY')){define('PG_AUTO_DISPLAY' , true);}
 // 是否开启自定义路由
 if(!defined('PG_ROUTE')){define('PG_ROUTE' , false);}
 // 全局关闭缓存 [ 调试时可以开启此项来观察数据变化 ]
-if(!defined('PG_CLOSE_CACHE')){define('PG_CLOSE_CACHE' , false);}
-// 文件型 sessions 文件存放路径
-if(!defined('PG_SESSION_DIR')){define('PG_SESSION_DIR' , './sessions');}
+if(!defined('PG_CLOSE_CACHE')){define('PG_CLOSE_CACHE' , false);} 
 // session 存储类型  [file, memcache, redis]
 if(!defined('PG_SESSION_TYPE')){define('PG_SESSION_TYPE' , 'file');}
 // 是否全应用启动 session
 if(!defined('PG_SESSION_START')){define('PG_SESSION_START' , false);}
 //session 类似为 memcache 或 redis 时，对应的主机地址 [memcache 11211 redis 6379]
-if(!defined('PG_SESSION_HOST')){define('PG_SESSION_HOST' , 'tcp://127.0.0.1:11211');}
-
+if(!defined('PG_SESSION_HOST')){define('PG_SESSION_HOST' , 'tcp://127.0.0.1:11211');} 
 // 应用所在目录
 if(!defined('PG_PATH')){define('PG_PATH'  , 'application');}
 // 网址分割线PG_URL_SPLITLINE 默认 / ，也可以自定义比如 - 
 if(!defined('PG_URL_SPLITLINE')){define('PG_URL_SPLITLINE'  , '/');}
 // 默认前端分组目录
-define('DEFAULT_SROOT'         ,  'home');
+define('DEFAULT_SROOT'  ,  'home');
 // 控制器文件所在目录
 define('PG_CONTROLLER'  , 'controllers');
 // 视图文件所在目录
@@ -68,7 +66,7 @@ define('PG_TOOLS'       , 'tools');
 // 语言包文件所在目录
 define('PG_LANG_PACKAGE', 'lang');
 // 全局配置文件名称
-define('PG_CONF'        , '../config/config.php');
+define('PG_CONF'        , PG_APP_ROOT.'/config.php');
 //	是否开启404页面展示 默认 true【开启】，false 【关闭】 
 if(!defined('PG_404')){define('PG_404' , true);}
 // 加载框架函数库
@@ -104,7 +102,7 @@ class grace{
 	
 	// 初始化函数
 	public function __init(){
-		$this->templateDir = PG_PATH.'/'.PG_VIEW.'/';
+		$this->templateDir = PG_PATH.'/'.PG_SROOT.'/'.PG_VIEW.'/';
 		if($this->tableName != null){$this->db = db($this->tableName);}
 		// 过滤 $_POST
 		if(!empty($_POST)){
@@ -351,16 +349,15 @@ try{
      **/
 	$includedFiles = get_included_files();
 	if(count($includedFiles) < 3){exit;}  
-	header('content-type:text/html; charset=utf-8'); #定义默认语言编码
-	if(PG_SESSION_START){startSession();}  # 检查是否需要开启session
-	//if(!is_dir(PG_PATH)){include PG_IN.'graceCreate.php'; graceCreateApp();}  #如果模块不存在，自动创建
+	header('content-type:text/html; charset=utf-8'); #定义默认语言编码 
 	$router = graceRouter();               # 路由解析基础url为数组 
 	$groupName = $router[0];               # 分组模块 
     $mode = '/^([a-z]|[A-Z]|[0-9])+$/Uis';
     $res  = preg_match($mode, $groupName);
     if(!$res){$groupName = DEFAULT_SROOT;} # 模块如果起名不规则，修正为默认模块
-    define('PG_SROOT',$groupName);         # 分组名确定下来了 ，分组名称常量 PG_SROOT
-    p('<BR/><span style="color:red">当前分组：'.PG_SROOT.'</span><BR/>');// -----------------------------------------------调试输出
+	define('PG_SROOT',$groupName);         # 分组名确定下来了 ，分组名称常量 PG_SROOT  
+	if(!defined('PG_SESSION_DIR')){ define('PG_SESSION_DIR' , PG_PATH.'/'.PG_SROOT.'/sessions'); }  #文件型 sessions 文件存放路径
+	if(PG_SESSION_START){startSession();}  # 检查是否需要开启session
     $controllerName = $router[1];          # 读取控制器 
     $resCtr  = preg_match($mode, $controllerName);
     if(!$resCtr){$controllerName = 'index';}  # 控制器如果起名不规则，修正为index控制器
@@ -369,18 +366,35 @@ try{
         $controllerName = 'index';            #  不存在就修正为默认
         $controllerFile = PG_PATH.'/'.PG_SROOT.'/'.PG_CONTROLLER.'/index.php';  # 重定义为默认首页的index控制器
         PG_404_Check();                       # 检查是否开启报错404模式
-    } 
-    p(' 控制器相对目录:'.$controllerFile.'<br/>');    // -----------------------------------------------调试输出
+    }  
     require $controllerFile;                  # 引入控制器文件
-    define('PG_C', $controllerName);          # 控制器确定下来，控制器常量 PG_C
-    p("<span style='color:red'>当前控制器：".PG_C."</span><br/>");      // -----------------------------------------------调试输出
+    define('PG_C', $controllerName);          # 控制器确定下来，控制器常量 PG_C 
     $controllerName = $controllerName.'Controller'; 
     $controller = new $controllerName;        # 实例化控制器
     if(!$controller instanceof grace){throw new graceException('[ '.$controllerName.' ] 该控制器 必须继承自 grace',100000);}
-	
-	 p('测试');
-
-	 
+	$methodName = $router[2];
+	$res  = preg_match($mode, $methodName); 
+    if(!$res){$methodName = 'index';}
+	 $graceMethods = array(
+		'__init', 'display', 'json','dataList', 'getDataById', 'getDefaultVal', 
+		'skipToIndex', 'getCacher', 'cache', 'clearCache', 'removeCache', 'initVal', 'intVal'
+	);
+	if(in_array($methodName, $graceMethods)){$methodName  = 'index';}
+		if(!method_exists($controller, $methodName)){
+        $methodName  = 'index';
+        //如果对应方法名不存在，启动404页面
+	    PG_404_Check();
+    }
+    define('PG_M', $methodName);
+    array_shift($router);
+	array_shift($router);
+	array_shift($router); 
+	$controller->gets = $router;  # 获取参数
+	define('PG_URL', implode(PG_URL_SPLITLINE, $router));
+	call_user_func(array($controller, '__init'));
+	$GLOBALS['graceSql'] = array();
+	call_user_func(array($controller, $methodName)); 
+	if(PG_AUTO_DISPLAY){call_user_func(array($controller, 'display'));}
 	 //运行追踪
     if(PG_TRACE){gracesTrace();} 
 }catch(graceException $e){$e->showBug();}  

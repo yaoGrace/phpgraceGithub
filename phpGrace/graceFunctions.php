@@ -1,8 +1,11 @@
 <?php
-/******************************************************
- * 框架常用函数文件
- * @version   1.2.0
- *****************************************************/
+/*********************************************************************
+ *  框架常用函数
+ *  @auther  :  yaoGrace
+ *  @email   :  liukuaizhuan@qq.com 
+ *  @version :  2.0.0
+ *  github	 :  https://github.com/yaoGrace/phpgraceGithub 
+ *********************************************************************/
 
 /* 行错误及异常处理  */
 error_reporting(E_ALL);
@@ -50,7 +53,7 @@ function gracesTrace(){
 
 /* 全局配置文件检查 */
 function graceInitConfig(){
-	$configFile = PG_IN.'config.php';
+	$configFile = PG_CONF;
 	if(is_file($configFile)){return TRUE;}
 	file_put_contents($configFile, file_get_contents(PG_IN.'templates'.PG_DS.'config.php'));
 }
@@ -62,7 +65,7 @@ function __graceAutoLoad($className){
 		$fileUri = PG_PATH.'/'.PG_SROOT.'/'.PG_CONTROLLER.'/'.substr($className, 0, -10).'.php';
 		if(is_file($fileUri)){require $fileUri;} 
 	}
-	// 利用命名空间加载其它类文件
+	// 利用命名空间加载其它类文件(需要重写写)
 	else{
 		$fileUri = PG_IN.substr($className, 9).'.php';
 		if(PG_DS == '/'){$fileUri = str_replace('\\', '/', $fileUri);}
@@ -149,7 +152,7 @@ function tool($args){
 
 /**
  * graceRouter 
- * 功能 : 路由解析
+ * 功能 : 路由解析 (自定义路由没有写)
  * @return array
 */
 function graceRouter(){  
@@ -181,9 +184,7 @@ function graceRouter(){
 		$router[0] = DEFAULT_SROOT;
 		$router[1] = 'index';
 		$router[2] = 'index'; 
-	} 
-	p($router);
-	p("<br/>数组数量：".count($router)."<br/>");
+	}  
  // 提取分页   	
  for($i = 3; $i < count($router); $i++){
 	 if(preg_match('/^page_(.*)('.PG_SUFFIX.')*$/Ui', $router[$i], $matches)){
@@ -191,8 +192,7 @@ function graceRouter(){
 		 array_splice($router, $i, 1);
 	 }
  }
- if(!defined("PG_PAGE")){define("PG_PAGE",  1);} 
- p("当前分页为：".PG_PAGE.'页');
+ if(!defined("PG_PAGE")){define("PG_PAGE",  1);}  
  return $router;
 }
 
@@ -216,7 +216,7 @@ function initPOST($name, $value = ''){
  */
 function c($key1, $key2 = null){
 	static $config = null;
-	if($config == null){$config = require PG_PATH.'/config.php';}
+	if($config == null){$config = require PG_CONF;}
 	if(is_null($key1)){return $config;}
 	if(is_null($key2)){if(isset($config[$key1])){return $config[$key1];} return null;}
 	if(isset($config[$key1][$key2])){return $config[$key1][$key2];}
@@ -231,7 +231,7 @@ function c($key1, $key2 = null){
 function sc($key1 = null, $key2 = null){
 	static $config = null;
 	if($config == null){
-		$config = require PG_IN.'config.php';
+		$config = require PG_CONF;
 	}
 	if(is_null($key1)){return $config;}
 	if(is_null($key2)){if(isset($config[$key1])){return $config[$key1];} return null;}
@@ -351,7 +351,7 @@ function lang($key){
 	static $Lang = null;
 	if(is_null($Lang)){
 		$langName = empty($_COOKIE['phpGraceLang']) ? 'zh' : $_COOKIE['phpGraceLang'];
-		$langFile = PG_PATH.'/'.PG_LANG_PACKAGE.'/'.$langName.'.php';
+		$langFile = PG_PATH.'/'.PG_SROOT.'/'.PG_LANG_PACKAGE.'/'.$langName.'.php';
 		if(is_file($langFile)){
 			$Lang = require $langFile;
 		}else{
@@ -450,4 +450,13 @@ function graceCacheName($name, $parameter = '', $isSuper = true){
 	$cacheName   = $isSuper ? $cacheConfig['pre'].$name.$parameter : $cacheConfig['pre'].PG_C.'_'.PG_M.'_'.$name.$parameter;
 	if(empty($cacheConfig['name2md5'])){ return $cacheName; }
 	return md5($cacheName);
+}
+
+/**
+ * 创建分组
+ * @param $dirName 分组英文名称
+ */
+function crateModelGroup($name){
+    include PG_IN.'graceCreate.php'; 
+    graceCreateApp($name);
 }

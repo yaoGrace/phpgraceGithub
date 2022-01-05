@@ -1,6 +1,4 @@
-<?php 
-//开启报错模式 后显示
-if(!defined('PG_VERSION')) exit();?>
+<?php if(!defined('PG_VERSION')) exit();?>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -16,24 +14,23 @@ body{background:#FFFFFF; font-family:"微软雅黑"; color:#323233; padding:25px
 .pg-copy-right sup{font-size:10px;}
 a{color:#3688ff;}
 .pg-wrap{width:800px; margin:0 auto; margin-top:150px; background:#F8F8F8; padding:38px; border-radius:3px; border-top:5px solid #009688;}
-</style> 
+</style>
 </head>
 <body>
 <?php $errors = json_decode(systemErrors);?>
 <div class="pg-wrap">
 	<div class="pg-title">
-		<span style="padding-right:20px;">:(</span>出错了! 
+		<span style="padding-right:20px;">:(</span>出错了!
 	</div>
 	<div class="pg-content">
-		<span>错误遍码 : </span>  <?php echo $errors[0]?><br />
-		<a href="" targent="_"></a>
-		 <span>错误信息 : </span><?php echo $errors[1];?><br />   
+		<span>错误遍码 : </span><?php echo $errors[0];?><br />
+		<span>错误信息 : </span><?php echo $errors[1];?><br />
 		<span>相关文件 : </span><?php echo $errors[2];?><br />
 		<span>错误位置 : </span><?php echo $errors[3];?>行<br />
 	</div>
-	<div class="pg-copy-right" style="color:#009688">
-		 [报错模式]  
+	<div class="pg-copy-right">
+		<a href="#" target="_blank">power by 扣小妖精</a>
 	</div>
-</div>  
+</div>
 </body>
 </html>

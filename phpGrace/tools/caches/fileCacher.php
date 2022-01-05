@@ -1,7 +1,8 @@
 <?php
-/***************************************************
- * 文件型缓存支持类 
-*****************************************************/
+/*
+ * 文件型缓存支持类
+ * 作者 : 深海 5213606@qq.com
+*/
 namespace phpGrace\tools\caches;
 
 class fileCacher{
@@ -10,8 +11,9 @@ class fileCacher{
 	private $cacheDir      = 'caches';
 	
 	private function __construct($config){
-		if(!defined('PG_CACHE_DIR')){
-			$this->cacheDir = PG_PATH.'/'.$this->cacheDir.'/';
+	    # 如果没有自定义缓存目录常量，则用默认的缓存目录地址
+		if(!defined('PG_CACHE_DIR')){ 
+			$this->cacheDir = PG_APP_ROOT.'/Cache/'.$this->cacheDir.'/';
 		}else{
 			$this->cacheDir = PG_CACHE_DIR;
 		}

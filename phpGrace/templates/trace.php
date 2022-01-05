@@ -55,7 +55,6 @@
 		内存消耗 : <?php echo $cost[1];?> k
 	</div>
 </div>
-
 <script type="text/javascript">
 var graceTraceStatus = false;
 function showTrace(){

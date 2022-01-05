@@ -1,8 +1,13 @@
 <?php
-/******************************************************************
- * 数据验证类 
+/**
+ * 数据验证类
+ * @link      http://www.phpGrace.com
+ * @copyright Copyright (c) 2010-2018 phpGrace.
+ * @license   http://www.phpGrace.com/license
+ * @package   phpGrace/tools
+ * @author    haijun liu mail:5213606@qq.com
  * @version   1.1 Beta
- ******************************************************************/
+ */
 namespace phpGrace\tools;
 class dataChecker{
 	
