@@ -370,11 +370,8 @@ try{
         $controllerFile = PG_PATH.'/'.PG_SROOT.'/'.PG_CONTROLLER.'/index.php';  # 重定义为默认首页的index控制器
         PG_404_Check();                       # 检查是否开启报错404模式
     } 
-    p(' 控制器相对目录:'.$controllerFile.'<br/>');    // -----------------------------------------------调试输出 
-    p('当前控制器名称：'.$controllerName.'<br/>');
-    p($includedFiles);
-    require $controllerFile;                  # 引入控制器文件 
-    p($controllerFile);
+    p(' 控制器相对目录:'.$controllerFile.'<br/>');    // -----------------------------------------------调试输出
+    require $controllerFile;                  # 引入控制器文件
     define('PG_C', $controllerName);          # 控制器确定下来，控制器常量 PG_C
     p("<span style='color:red'>当前控制器：".PG_C."</span><br/>");      // -----------------------------------------------调试输出
     $controllerName = $controllerName.'Controller'; 
