@@ -7,7 +7,7 @@
 </head>
 <body>
 	<div style="font-size:22px; line-height:2em; font-family:微软雅黑; padding:0 100px; margin-top: 50px;">
-		<span style="font-size:38px; font-family:微软雅黑;">(: 说明</span><br />
+		<span style="font-size:38px; font-family:微软雅黑;">(: 目录结构说明</span><br />
 	</div>
 	<div style="font-size:12px; line-height:2em; font-family:微软雅黑; padding:0 100px; margin-top:28px;">
 		这个是一个网站应用文件及目录示例，目录结构:
@@ -39,7 +39,7 @@
 |_ favicon.ico          // 图标
 |_ index.php            // 入口文件
 
-		</pre> 
+		</pre>  
 	</div>  
 </body>
 </html>
