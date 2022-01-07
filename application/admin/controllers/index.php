@@ -6,4 +6,6 @@ class indexController extends adminController{
      public function test(){
         echo sc('db', 'charset');
      }
+
+     
 }
